@@ -12,32 +12,4 @@ miniprogram_npm
 
 ### VS Code ###
 .vscode
-
-
-### dev 环境不追踪配置文件 ###
-web/dist
-app/dist
-
-app/.hbuilderx
-app/.cloudbase
-app/unpackage
-app/unpackage/*
 yarn.lock
-web/src/auto-imports.d.ts
-__debug_bin
-未完成接口.md
-server/config.yaml
-.gitignore
-
-old_app
-
-*/dist
-*/*.log
-
-
-**/*_build_**
-**/*-build
-**/*-build-**
-**/*-build
-**/*-build.*
-**/imall
