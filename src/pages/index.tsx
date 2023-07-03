@@ -3,14 +3,15 @@ import React, {useState, useEffect} from "react";
 import {MineExplosion, MineFlag} from "@/components/Icon"
 import {BlockState} from "@/types/types";
 import {produce} from "immer"
+import {useSpring, animated} from '@react-spring/web'
 
 const inter = Inter({subsets: ['latin']})
 
 enum GameStatus {
-  READY,
-  PLAY,
-  WIN,
-  LOST
+  READY = "准备",
+  PLAY = "进行中",
+  WIN = "胜利",
+  LOST = "失败",
 }
 
 // 随机范围
@@ -27,7 +28,7 @@ function randomInt(min: number, max: number) {
 // 游戏设置
 const width = 10
 const height = 10
-const mines = 5
+const mines = 10
 
 // 初始化棋盘
 function initBoard(row: number, col: number) {
@@ -43,12 +44,14 @@ function initBoard(row: number, col: number) {
   )
 }
 
-
 export default function Game() {
 
   const [status, setStatus] = useState<GameStatus>(GameStatus.READY)// 游戏状态
   const [board, setBoard] = useState<BlockState[][]>([])// 棋盘
   const [mineGenerated, setMineGenerated] = useState<boolean>(false)// 地雷是否已经生成
+  const [startTime, setStartTime] = useState<number>()// 游戏开始时间
+  const [endTime, setEndTime] = useState<number>()// 游戏结束时间
+
 
   useEffect(() => {
     const board = initBoard(width, height)
@@ -59,7 +62,6 @@ export default function Game() {
   // 生成地雷
   function generateMines(initial: BlockState) {
     const copyBoard = JSON.parse(JSON.stringify(board));
-
     const placeRandom = () => {
       const x = randomInt(0, width - 1);
       const y = randomInt(0, height - 1);
@@ -70,7 +72,6 @@ export default function Game() {
       block.mine = true;
       return true;
     };
-
     for (let i = 0; i < mines; i++) {
       let placed = false;
       let attempts = 0;
@@ -80,10 +81,8 @@ export default function Game() {
         placed = placeRandom();
         attempts++;
       }
-
       updateNumbers(copyBoard);
     }
-
     setBoard(copyBoard);
   }
 
@@ -97,50 +96,69 @@ export default function Game() {
     });
   }
 
+  const directions = [
+    [-1, -1], [-1, 0], [-1, 1],
+    [0, -1], [0, 1],
+    [1, -1], [1, 0], [1, 1],
+  ];
+
+  // 展开周围的空白
+  function revealAdjacent(block: BlockState) {
+    if (block.adjacentMines) return
+    setBoard(produce(draft => {
+      getSiblings(block).forEach((s) => {
+        if (!s.revealed) {
+          if (!s.flag)
+            draft[s.y][s.x].revealed = true
+        }
+      })
+    }))
+  }
+
+  function getSiblings(block: BlockState) {
+    return directions.map(([dx, dy]) => {
+      const x2 = block.x + dx
+      const y2 = block.y + dy
+      if (x2 < 0 || x2 >= width || y2 < 0 || y2 >= height)
+        return undefined
+      return board[y2][x2]
+    }).filter(Boolean) as BlockState[]
+  }
+
+
+
   // 计算周围的地雷数量
   function calcAdjacentMines(board: BlockState[][], block: BlockState): number {
     let count = 0;
-    const directions = [
-      [-1, -1], [-1, 0], [-1, 1],
-      [0, -1], [0, 1],
-      [1, -1], [1, 0], [1, 1],
-    ];
-
     directions.forEach(([dx, dy]) => {
       const x2 = block.x + dx;
       const y2 = block.y + dy;
       if (x2 < 0 || x2 >= width || y2 < 0 || y2 >= height) return;
       if (board[y2][x2].mine) count++;
     });
-
     return count;
-  }
-
-
-  // 游戏开始
-  function startGame(block: BlockState) {
-    setStatus(GameStatus.PLAY)
-    // 生成地雷
-    if (!mineGenerated) {
-      generateMines(block);
-      setMineGenerated(true)
-    }
   }
 
   // 处理左键点击
   function handleLeftClick(block: BlockState) {
-    console.log('handleLeftClick', block, status)
-    if (status === GameStatus.READY)
-      startGame(block) //开始游戏
-    else if (status === GameStatus.PLAY && !block.flag) {
-      if (block.mine)
-        setStatus(GameStatus.LOST)
-      else {
-        setBoard(produce(draft => {
-          draft[block.y][block.x].revealed = true
-        }))
+    if (status === GameStatus.LOST) return
+    if (status === GameStatus.READY) {
+      setStatus(GameStatus.PLAY)
+      if (!mineGenerated) {
+        // 生成地雷
+        generateMines(block);
+        setMineGenerated(true)
       }
     }
+    setBoard(produce(draft => {
+      draft[block.y][block.x].revealed = true
+    }))
+    // 点击到地雷
+    if (block.mine && !block.flag) {
+      setStatus(GameStatus.LOST)
+      return;
+    }
+    revealAdjacent(block)
   }
 
   // 处理右键点击
@@ -152,9 +170,11 @@ export default function Game() {
     }))
   }
 
-
   return (
     <main>
+      <div>
+        <span>游戏状态:{status}</span>
+      </div>
       <div className="flex justify-center mt-32">
         {
           board.map((row, x) =>
@@ -162,22 +182,28 @@ export default function Game() {
               {
                 row.map((block, y) =>
                   <button key={y}
-                          className="flex items-center justify-center w-10 h-10 border-2 hover:bg-sky-700"
+                          className={`flex items-center justify-center w-10 h-10 border-2 hover:bg-sky-700 ${!block.revealed ? 'bg-white-700' : 'bg-gray-200'}`}
                           onClick={() => handleLeftClick(block)}
                           onContextMenu={(e) => handleRightClick(e, block)}>
-                    {block.mine ? <MineExplosion color={"red"}/> : null}
                     {block.flag ? <MineFlag color={"red"}/> : null}
-                    {block.revealed ? block.adjacentMines : null}
+                    {!block.revealed ? null : block.mine ?
+                      <MineExplosion color={"red"}/> : block.adjacentMines > 0 &&
+                      <span className={numberColor[block.adjacentMines]}>{block.adjacentMines}</span>}
                   </button>
                 )
               }
             </div>)
         }
-
       </div>
-      <span>
-        游戏状态{status}
-      </span>
     </main>
   )
 }
+
+const numberColor = [
+  'text-amber-500',
+  'text-green-500',
+  'text-red-500',
+  'text-blue-500',
+  'text-purple-500',
+  'text-cyan-500',
+]

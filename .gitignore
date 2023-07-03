@@ -13,3 +13,5 @@ miniprogram_npm
 ### VS Code ###
 .vscode
 yarn.lock
+
+.next
