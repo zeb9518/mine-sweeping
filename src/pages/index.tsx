@@ -53,6 +53,12 @@ const NUMBER_COLORS = [
   'text-cyan-500',
 ]
 
+const directions = [
+  [-1, -1], [-1, 0], [-1, 1],
+  [0, -1], [0, 1],
+  [1, -1], [1, 0], [1, 1],
+];
+
 export default function Game() {
 
   const [status, setStatus] = useState<GameStatus>(GameStatus.READY)// 游戏状态
@@ -104,14 +110,6 @@ export default function Game() {
     }
     return copyBoard
   }
-
-
-  const directions = [
-    [-1, -1], [-1, 0], [-1, 1],
-    [0, -1], [0, 1],
-    [1, -1], [1, 0], [1, 1],
-  ];
-
 
   // 展示所有地雷
   function revealMines(board: BlockState[][]) {
