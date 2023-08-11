@@ -1,11 +1,11 @@
-import {Inter} from 'next/font/google'
-import React, {useState, useEffect} from "react";
-import {MineExplosion, MineFlag} from "@/components/Icon"
-import {BlockState} from "@/types/types";
-import {produce} from "immer"
-import {useSpring, animated} from '@react-spring/web'
+import { Inter } from 'next/font/google'
+import React, { useState, useEffect } from "react";
+import { MineExplosion, MineFlag } from "@/components/Icon"
+import { BlockState } from "@/types/types";
+import { produce } from "immer"
+import { useSpring, animated } from '@react-spring/web'
 
-const inter = Inter({subsets: ['latin']})
+const inter = Inter({ subsets: ['latin'] })
 
 enum GameStatus {
   READY = "准备",
@@ -32,8 +32,8 @@ const mines = 10
 
 // 初始化棋盘
 function initBoard(row: number, col: number) {
-  return Array.from({length: col}, (_, y) =>
-    Array.from({length: row},
+  return Array.from({ length: col }, (_, y) =>
+    Array.from({ length: row },
       (_, x): BlockState => ({
         x,
         y,
@@ -114,10 +114,10 @@ export default function Game() {
   // 展示所有地雷
   function revealMines(board: BlockState[][]) {
     return board.map(row => row.map(block => {
-        if (block.mine && !block.flag)
-          block.revealed = true
-        return block
-      })
+      if (block.mine && !block.flag)
+        block.revealed = true
+      return block
+    })
     )
   }
 
@@ -195,30 +195,35 @@ export default function Game() {
 
   return (
     <main>
-      <div>
-        <span>游戏状态:{status}</span>
-      </div>
-      <div className="flex justify-center mt-32">
-        <div className={"flex border-2"}>
-          {
-            board.map((row, x) =>
-              <div key={x}>
-                {
-                  row.map((block, y) =>
-                    <button key={y}
-                            className={`flex items-center justify-center w-10 h-10 border-2 hover:bg-sky-700 ${!block.revealed ? 'bg-white-700' : 'bg-gray-200'}`}
-                            onClick={() => handleLeftClick(block)}
-                            onContextMenu={(e) => handleRightClick(e, block)}>
-                      {block.flag ? <MineFlag color={"red"}/> : null}
-                      {!block.revealed ? null : block.mine ?
-                        <MineExplosion color={"red"}/> : block.adjacentMines > 0 &&
-                        <span className={NUMBER_COLORS[block.adjacentMines]}>{block.adjacentMines}</span>}
-                    </button>
-                  )
-                }
-              </div>)
-          }
+      <div className="flex flex-col items-center justify-center min-h-screen  ">
+        <div className='mb-10'>
+          <span>游戏状态:{status}</span>
         </div>
+        <div className='board'>
+          <div className={"flex warp"}>
+            {
+              board.map((row, x) =>
+                <div key={x} className=''>
+                  {
+                    row.map((block, y) =>
+                      <div className='block'>
+                        <button key={y}
+                          className={`w-10 h-10 ${!block.revealed ? 'bg-white-700' : 'block_concealed'}`}
+                          onClick={() => handleLeftClick(block)}
+                          onContextMenu={(e) => handleRightClick(e, block)}>
+                          {block.flag ? <MineFlag color={"red"} /> : null}
+                          {!block.revealed ? null : block.mine ?
+                            <MineExplosion color={"red"} /> : block.adjacentMines > 0 &&
+                            <span className={NUMBER_COLORS[block.adjacentMines]}>{block.adjacentMines}</span>}
+                        </button>
+                      </div>
+                    )
+                  }
+                </div>)
+            }
+          </div>
+        </div>
+
       </div>
     </main>
   )

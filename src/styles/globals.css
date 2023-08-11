@@ -2,3 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
+main{
+  background-color: #c6c6c6;
+}
+
+
+.board {
+  position: relative;
+  background-color: #c6c6c6;
+  padding: 20px;
+}
+
+.board::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 5px solid transparent;
+  border-top-color: #ffffff;
+  border-left-color: #ffffff;
+  border-bottom-color: #808080;
+  border-right-color: #808080;
+}
+
+.warp {
+  position: relative;
+  padding:5px ;
+}
+
+
+.warp div {
+  z-index: 1;
+}
+
+.warp::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 5px solid transparent;
+  border-top-color: #808080;
+  border-left-color: #808080;
+  border-bottom-color: #ffffff;
+  border-right-color: #ffffff;
+}
+
+
+.block{
+  border: 1px solid #808080;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  position: relative;
+  z-index: 1;
+}
+
+.block>button{
+  z-index: 2;
+}
+
+
+.block::before{
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 5px solid transparent;
+  border-top-color: #ffffff;
+  border-left-color: #ffffff;
+  border-bottom-color: #808080;
+  border-right-color: #808080;
+}
+
+.block_revealed{
+  background-color: #ffffff;
+  color: #000000;
+}
