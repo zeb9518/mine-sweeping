@@ -29,13 +29,31 @@ main{
 
 .warp {
   position: relative;
-  padding:5px ;
+  background-color: #808080;
 }
 
 
 .warp div {
   z-index: 1;
 }
+
+
+.warp>div >.block:first-child {
+  border-top: 0
+}
+
+.warp>div>.block:last-child {
+ border-bottom: 0
+}
+
+.warp>div:first-child .block{
+ border-left: 0;
+}
+
+.warp>div:last-child .block{
+ border-right: 0;
+}
+
 
 .warp::before {
   content: "";
@@ -54,20 +72,21 @@ main{
 
 .block{
   border: 1px solid #808080;
+  background-color: #c6c6c6;
+  padding: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px;
+}
+
+
+
+.block-action{
   position: relative;
-  z-index: 1;
+  background-color: #c6c6c6;
 }
 
-.block>button{
-  z-index: 2;
-}
-
-
-.block::before{
+.block-action::before{
   content: "";
   position: absolute;
   top: -5px;
@@ -81,7 +100,6 @@ main{
   border-right-color: #808080;
 }
 
-.block_revealed{
-  background-color: #ffffff;
-  color: #000000;
+.block-revealed{
+  color: #ffffff;
 }

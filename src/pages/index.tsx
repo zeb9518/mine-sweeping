@@ -208,7 +208,7 @@ export default function Game() {
                     row.map((block, y) =>
                       <div className='block'>
                         <button key={y}
-                          className={`w-10 h-10 ${!block.revealed ? 'bg-white-700' : 'block_concealed'}`}
+                          className={`w-10 h-10 ${!block.revealed ? 'block-action' : 'block-revealed'}`}
                           onClick={() => handleLeftClick(block)}
                           onContextMenu={(e) => handleRightClick(e, block)}>
                           {block.flag ? <MineFlag color={"red"} /> : null}
