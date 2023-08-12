@@ -37,7 +37,6 @@ main{
   z-index: 1;
 }
 
-
 .warp>div >.block:first-child {
   border-top: 0
 }
@@ -101,5 +100,7 @@ main{
 }
 
 .block-revealed{
-  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
