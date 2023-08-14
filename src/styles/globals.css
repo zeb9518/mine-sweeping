@@ -79,10 +79,12 @@ main{
 }
 
 
-
 .block-action{
   position: relative;
   background-color: #c6c6c6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .block-action::before{
@@ -103,4 +105,8 @@ main{
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.mind-boom{
+  background-color: red;
 }

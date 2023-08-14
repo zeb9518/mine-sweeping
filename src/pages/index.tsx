@@ -64,6 +64,7 @@ export default function Game() {
   const [status, setStatus] = useState<GameStatus>(GameStatus.READY)// 游戏状态
   const [board, setBoard] = useState<BlockState[][]>([])// 棋盘
   const [mineGenerated, setMineGenerated] = useState<boolean>(false)// 地雷是否已经生成
+
   const [startTime, setStartTime] = useState<number>()// 游戏开始时间
   const [endTime, setEndTime] = useState<number>()// 游戏结束时间
 
@@ -129,7 +130,9 @@ export default function Game() {
 
     // 点击到地雷
     if (block.mine && !block.flag) {
+      copyBoard[block.y][block.x].boom = true // 爆炸
       setStatus(GameStatus.LOST)
+      console.log('游戏结束', copyBoard)
       return revealMines(copyBoard);
     }
     // 点击到数字
@@ -206,14 +209,14 @@ export default function Game() {
                 <div key={x} className=''>
                   {
                     row.map((block, y) =>
-                      <div className='block'>
-                        <button key={y}
+                      <div className={`block   ${block.boom ? 'mind-boom' : ''}`} key={y}>
+                        <button
                           className={`w-10 h-10 ${!block.revealed ? 'block-action' : 'block-revealed'}`}
                           onClick={() => handleLeftClick(block)}
                           onContextMenu={(e) => handleRightClick(e, block)}>
-                          {block.flag ? <MineFlag color={"red"} /> : null}
+                          {block.flag ? <MineFlag /> : null}
                           {!block.revealed ? null : block.mine ?
-                            <MineExplosion color={"red"} /> : block.adjacentMines > 0 &&
+                            <MineExplosion /> : block.adjacentMines > 0 &&
                             <span className={NUMBER_COLORS[block.adjacentMines]}>{block.adjacentMines}</span>}
                         </button>
                       </div>
@@ -223,7 +226,6 @@ export default function Game() {
             }
           </div>
         </div>
-
       </div>
     </main>
   )
