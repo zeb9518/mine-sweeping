@@ -41,7 +41,7 @@ function initBoard(row: number, col: number) {
 }
 
 
-
+// 棋盘数字
 const NUMBERS_MAP = new Map()
 NUMBERS_MAP.set(1, <Icons.One />)
 NUMBERS_MAP.set(2, <Icons.Two />)
@@ -52,12 +52,61 @@ NUMBERS_MAP.set(6, <Icons.Six />)
 NUMBERS_MAP.set(7, <Icons.Seven />)
 NUMBERS_MAP.set(8, <Icons.Eight />)
 
+// 计时数字
+const COUNT_NUMBER_MAP = new Map()
+COUNT_NUMBER_MAP.set(0, <Icons.CountZero />)
+COUNT_NUMBER_MAP.set(1, <Icons.CountOne />)
+COUNT_NUMBER_MAP.set(2, <Icons.CountTwo />)
+COUNT_NUMBER_MAP.set(3, <Icons.CountThree />)
+COUNT_NUMBER_MAP.set(4, <Icons.CountFour />)
+COUNT_NUMBER_MAP.set(5, <Icons.CountFive />)
+COUNT_NUMBER_MAP.set(6, <Icons.CountSix />)
+COUNT_NUMBER_MAP.set(7, <Icons.CountSeven />)
+COUNT_NUMBER_MAP.set(8, <Icons.CountEight />)
+COUNT_NUMBER_MAP.set(9, <Icons.CountNine />)
 
+
+
+//  8个方向
 const directions = [
   [-1, -1], [-1, 0], [-1, 1],
   [0, -1], [0, 1],
   [1, -1], [1, 0], [1, 1],
 ];
+
+
+// 时间计数器
+function TimeCounter(props: any) {
+  const [time, setTime] = useState<number>(0)
+  useEffect(() => {
+    if (props.status === GameStatus.READY) {
+      setTime(0)
+      return
+    } else if (props.status === GameStatus.PLAY) {
+      const timer = setInterval(() => {
+        setTime(time => time + 1)
+      }, 1000)
+      return () => clearInterval(timer)
+    }
+  }, [props.status])
+  const num1 = Math.floor(time / 100) // 百位
+  const num2 = Math.floor(time / 10) % 10 // 十位
+  const num3 = time % 10
+  return (
+    <div className="flex bg-black p-2">
+      <div className="w-10 h-10">
+        {COUNT_NUMBER_MAP.get(num1)}
+      </div>
+      <div className="w-10 h-10">
+        {COUNT_NUMBER_MAP.get(num2)}
+      </div>
+      <div className="w-10 h-10">
+        {COUNT_NUMBER_MAP.get(num3)}
+      </div>
+    </div>
+  )
+}
+
 
 export default function Game() {
 
@@ -65,8 +114,6 @@ export default function Game() {
   const [board, setBoard] = useState<BlockState[][]>([])// 棋盘
   const [mineGenerated, setMineGenerated] = useState<boolean>(false)// 地雷是否已经生成
 
-  const [startTime, setStartTime] = useState<number>()// 游戏开始时间
-  const [endTime, setEndTime] = useState<number>()// 游戏结束时间
 
 
   useEffect(() => {
@@ -132,7 +179,6 @@ export default function Game() {
     if (block.mine && !block.flag) {
       copyBoard[block.y][block.x].boom = true // 爆炸
       setStatus(GameStatus.LOST)
-      console.log('游戏结束', copyBoard)
       return revealMines(copyBoard);
     }
     // 点击到数字
@@ -206,6 +252,12 @@ export default function Game() {
           <span>游戏状态:{status}</span>
         </div>
         <div className='board' onContextMenu={(e) => e.preventDefault()}>
+          <div className={"warp mb-5"}>
+            <div className="flex justify-between p-2 " style={{ backgroundColor: '#c6c6c6' }}>
+              <TimeCounter />
+              <TimeCounter status={status} />
+            </div>
+          </div>
           <div className={"flex warp"}>
             {
               board.map((row, x) =>
@@ -232,7 +284,7 @@ export default function Game() {
           </div>
         </div>
       </div>
-    </main>
+    </main >
   )
 }
 
