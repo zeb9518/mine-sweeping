@@ -189,7 +189,10 @@ export default function Game() {
   // 处理右键点击
   function handleRightClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, block: BlockState) {
     e.preventDefault();
-    if (status !== GameStatus.PLAY) return
+    if (status !== GameStatus.PLAY) {
+      handleLeftClick(block)
+      return
+    }
     setBoard(produce(draft => {
       if (block.revealed) return
       draft[block.y][block.x].flag = !block.flag
@@ -202,7 +205,7 @@ export default function Game() {
         <div className='mb-10'>
           <span>游戏状态:{status}</span>
         </div>
-        <div className='board'>
+        <div className='board' onContextMenu={(e) => e.preventDefault()}>
           <div className={"flex warp"}>
             {
               board.map((row, x) =>
