@@ -1,11 +1,7 @@
-import { Inter } from 'next/font/google'
 import React, { useState, useEffect } from "react";
-import { MineExplosion, MineFlag } from "@/components/Icon"
+import * as Icons from "@/components/Icons"
 import { BlockState } from "@/types/types";
 import { produce } from "immer"
-import { useSpring, animated } from '@react-spring/web'
-
-const inter = Inter({ subsets: ['latin'] })
 
 enum GameStatus {
   READY = "准备",
@@ -44,14 +40,18 @@ function initBoard(row: number, col: number) {
   )
 }
 
-const NUMBER_COLORS = [
-  'text-amber-500',
-  'text-green-500',
-  'text-red-500',
-  'text-blue-500',
-  'text-purple-500',
-  'text-cyan-500',
-]
+
+
+const NUMBERS_MAP = new Map()
+NUMBERS_MAP.set(1, <Icons.One />)
+NUMBERS_MAP.set(2, <Icons.Two />)
+NUMBERS_MAP.set(3, <Icons.Three />)
+NUMBERS_MAP.set(4, <Icons.Four />)
+NUMBERS_MAP.set(5, <Icons.Five />)
+NUMBERS_MAP.set(6, <Icons.Six />)
+NUMBERS_MAP.set(7, <Icons.Seven />)
+NUMBERS_MAP.set(8, <Icons.Eight />)
+
 
 const directions = [
   [-1, -1], [-1, 0], [-1, 1],
@@ -214,10 +214,12 @@ export default function Game() {
                           className={`w-10 h-10 ${!block.revealed ? 'block-action' : 'block-revealed'}`}
                           onClick={() => handleLeftClick(block)}
                           onContextMenu={(e) => handleRightClick(e, block)}>
-                          {block.flag ? <MineFlag /> : null}
-                          {!block.revealed ? null : block.mine ?
-                            <MineExplosion /> : block.adjacentMines > 0 &&
-                            <span className={NUMBER_COLORS[block.adjacentMines]}>{block.adjacentMines}</span>}
+                          {block.flag ? <Icons.MineFlag /> : null}
+                          {
+                            !block.revealed ? null : block.mine ?
+                              <Icons.Mine /> : block.adjacentMines > 0 &&
+                              <span>{NUMBERS_MAP.get(block.adjacentMines)}</span>
+                          }
                         </button>
                       </div>
                     )
